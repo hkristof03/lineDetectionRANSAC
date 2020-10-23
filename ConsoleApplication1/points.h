@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include <vector>
 #include <string>
 #include <opencv2/core.hpp>
@@ -7,4 +8,11 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 
-std::vector<cv::Point> GetPoints(const &std::string);
+cv::Mat GetEdges(
+	std::string& str,
+	const int& kernel_size,
+	const double& min_val,
+	const double& max_val
+);
+
+std::vector<cv::Point> GetPoints(cv::Mat& edges);
