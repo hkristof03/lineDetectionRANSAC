@@ -1,6 +1,12 @@
 #include "ransac.h"
 
 
+extern cv::Scalar WHITE, GREEN, RED;
+extern double RADIUS, THICKNESS;
+extern int MIN_INLIERS;
+extern std::string WINDOW_NAME;
+
+
 void DrawPoint(
 	cv::Mat& img,
 	const cv::Point& p,
@@ -39,6 +45,7 @@ void FitLineRANSAC
 	cv::Mat* img
 ) 
 {
+	srand(time(NULL));
 	// The current number of iterations
 	int iteration_number = 0;
 	// The numer of inliers of the current best model
@@ -50,21 +57,21 @@ void FitLineRANSAC
 	// The parameters of the best line
 	//cv::Mat best_line(3, 1, CV_64F);
 	std::vector<double> best_line{ 0.0, 0.0, 0.0 };
-	//Helpers to draw the line if needed
-	cv::Point best_pt1, best_pt2;
 	// The sample size i.e 2 for 2D lines
 	constexpr int k_sample_size = 2;
 	// The current sample
 	std::vector<int> sample(k_sample_size);
 
 	bool should_draw = img != nullptr;
-	cv::Mat tmp_image;
 
 	// RANSAC:
 	// 1. Select a minimal sample in this case 2 random points
 	// 2. Fit a line to the points
 	// 3. Count the number of inliers: number of points closer than the threshold
 	// 4. Store the inlier number and the line parameters if it is better than the previous best
+	std::cout << "Number of iterations: " << max_iteration_num << std::endl;
+	std::cout << "Threshold: " << threshold << std::endl;
+	std::cout << "Number of inliers to draw the line: " << MIN_INLIERS << std::endl;
 
 	while (iteration_number++ < max_iteration_num)
 	{
@@ -126,26 +133,49 @@ void FitLineRANSAC
 			current_inliers.clear();
 			current_inliers.resize(0);
 
+			best_inlier_number = best_inliers.size();
 			best_line.at(0) = a;
 			best_line.at(1) = b;
 			best_line.at(2) = c;
-		}
+			
+			std::cout << "RANSAC found a new line!" << std::endl
+				<< "Current iteration: " << iteration_number << std::endl
+				<< "Number of inliers: " << best_inlier_number << std::endl
+				<< "a: " << a << std::endl << "b: " << b << std::endl 
+				<< "c: " << c << std::endl;
 
-		if (should_draw && current_inliers.size() > 20)
-		{
-			tmp_image = img->clone();
-			DrawPoint(tmp_image, p1, 5, cv::Scalar(0, 0, 255));
-			DrawPoint(tmp_image, p2, 5, cv::Scalar(0, 0, 255));
-			DrawLine(tmp_image, a, b, c, cv::Scalar(0, 255, 0), 2);
+			if (should_draw && best_inlier_number >= MIN_INLIERS)
+			{
+				for (const auto& idx : sample)
+					DrawPoint(*img, points[idx], RADIUS + 2.0, RED);
 
-			for (const auto &idx : current_inliers)
-				DrawPoint(tmp_image, points[idx], 3, cv::Scalar(0, 255, 0));
+				DrawLine(*img, a, b, c, GREEN, THICKNESS);
+				cv::imshow(WINDOW_NAME, *img);
+				cv::waitKey(100);
+				/*
+				* Replace the above drawing if want to visualize each iteration
+				cv::Mat tmp_image = img->clone();
 
-			cv::imshow("RANSAC", tmp_image);
-			cv::waitKey(0);
+					for (const auto& idx : sample)
+						DrawPoint(tmp_image, points[idx], RADIUS + 2.0, RED);
+
+					DrawLine(tmp_image, a, b, c, GREEN, THICKNESS);
+
+					for (const auto& idx : best_inliers)
+						DrawPoint(tmp_image, points[idx], RADIUS, GREEN);
+
+					cv::imshow(WINDOW_NAME, tmp_image);
+					cv::waitKey(100);
+				*/
+			}
 		}
 	}
 	inliers = best_inliers;
 	line = best_line;
+
+	std::cout << "Max number of inliers found: " << inliers.size() << std::endl;
+	std::cout << "Parameters of the best fitting line: " << std::endl << "a: " 
+		<< line.at(0) << std::endl << "b: " << line.at(1) << std::endl << "c: " 
+		<< line.at(2) << std::endl;
 }
 
