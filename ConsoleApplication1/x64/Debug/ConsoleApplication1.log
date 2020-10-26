@@ -1,0 +1,4 @@
+﻿  main.cpp
+D:\MSc\Classes\first_semester\3DComputerVision\Assignments\lineDetection\lineDetectionRansac\ConsoleApplication1\main.cpp(20,34): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+D:\MSc\Classes\first_semester\3DComputerVision\Assignments\lineDetection\lineDetectionRansac\ConsoleApplication1\main.cpp(20,28): warning C4244: 'initializing': conversion from 'double' to 'const int', possible loss of data
+  ConsoleApplication1.vcxproj -> D:\MSc\Classes\first_semester\3DComputerVision\Assignments\lineDetection\lineDetectionRansac\x64\Debug\ConsoleApplication1.exe

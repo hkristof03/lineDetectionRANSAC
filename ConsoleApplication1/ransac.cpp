@@ -152,21 +152,6 @@ void FitLineRANSAC
 				DrawLine(*img, a, b, c, GREEN, THICKNESS);
 				cv::imshow(WINDOW_NAME, *img);
 				cv::waitKey(100);
-				/*
-				* Replace the above drawing if want to visualize each iteration
-				cv::Mat tmp_image = img->clone();
-
-					for (const auto& idx : sample)
-						DrawPoint(tmp_image, points[idx], RADIUS + 2.0, RED);
-
-					DrawLine(tmp_image, a, b, c, GREEN, THICKNESS);
-
-					for (const auto& idx : best_inliers)
-						DrawPoint(tmp_image, points[idx], RADIUS, GREEN);
-
-					cv::imshow(WINDOW_NAME, tmp_image);
-					cv::waitKey(100);
-				*/
 			}
 		}
 	}
